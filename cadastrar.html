@@ -15,5 +15,54 @@
             <a href="necessidades.html">Ver Necessidades</a>
         </nav>
     </header>
+    <main>
+        <section class="area-cadastro">
+            <h2>Cadastro de Necessidade</h2>
+            <p class="descricao-cadastro">
+                Preencha o formulário abaixo para cadastrar uma nova necessidade da sua instituição. Os voluntários poderão visualizar e entrar em contato!
+            </p>
+            <form id="form-necessidade">
+                <label for="instituicao">Nome da Instituição*</label>
+                <input type="text" id="instituicao" name="instituicao" required>
+
+                <label for="tipo-ajuda">Tipo de Ajuda*</label>
+                <select id="tipo-ajuda" name="tipo-ajuda" required>
+                    <option value="">Selecione</option>
+                    <option>Educação</option>
+                    <option>Saúde</option>
+                    <option>Meio Ambiente</option>
+                    <option>Doação de Alimentos</option>
+                    <option>Doação de Roupas</option>
+                    <option>Outros</option>
+                </select>
+
+                <label for="titulo">Título da Necessidade*</label>
+                <input type="text" id="titulo" name="titulo" required>
+
+                <label for="descricao">Descrição Detalhada*</label>
+                <textarea id="descricao" name="descricao" rows="4" required></textarea>
+
+                <label for="cep">CEP*</label>
+                <input type="text" id="cep" name="cep" required maxlength="9">
+
+                <label for="rua">Rua*</label>
+                <input type="text" id="rua" name="rua" required>
+
+                <label for="bairro">Bairro*</label>
+                <input type="text" id="bairro" name="bairro" required>
+
+                <label for="cidade">Cidade*</label>
+                <input type="text" id="cidade" name="cidade" required>
+
+                <label for="estado">Estado*</label>
+                <input type="text" id="estado" name="estado" required>
+
+                <label for="contato">Contato (e-mail ou telefone)*</label>
+                <input type="text" id="contato" name="contato" required>
+
+                <button type="submit">Cadastrar Necessidade</button>
+            </form>
+        </section>
+    </main>
 </body>
 </html>
