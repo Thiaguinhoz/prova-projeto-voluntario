@@ -8,12 +8,71 @@
 </head>
 <body>
     <header>
-        <h1>Conexão Voluntária</h1>
+        <h1>Necessidades Voluntaria</h1>
         <nav>
             <a href="index.html">Home</a>
             <a href="cadastrar.html">Cadastrar Necessidade</a>
-            <a href="necessidades.html">Ver Necessidades</a>
+            <a href="necessidades.html">Necessidades</a>
         </nav>
     </header>
+    <main>
+        <h2>Necessidades Cadastradas</h2>
+        <div class="filtros">
+            <input type="text" id="pesquisa" placeholder="Pesquisar por título ou descrição...">
+            <select id="filtro-tipo">
+                <option value="">Todos os Tipos</option>
+                <option>Educação</option>
+                <option>Saúde</option>
+                <option>Meio Ambiente</option>
+                <option>Doação de Alimentos</option>
+                <option>Doação de Roupas</option>
+                <option>Outros</option>
+            </select>
+        </div>
+        <div id="lista-necessidades">
+            <!-- Cards dinâmicos aqui -->
+        </div>
+    </main>
+
+    <script>
+    // filepath: necessidades.html
+    function renderNecessidades() {
+        const lista = JSON.parse(localStorage.getItem('necessidades')) || [];
+        const pesquisa = document.getElementById('pesquisa').value.toLowerCase();
+        const tipo = document.getElementById('filtro-tipo').value;
+        const container = document.getElementById('lista-necessidades');
+        container.innerHTML = '';
+
+        const filtradas = lista.filter(n => {
+            const matchPesquisa = n.titulo.toLowerCase().includes(pesquisa) || n.descricao.toLowerCase().includes(pesquisa);
+            const matchTipo = !tipo || n.tipoAjuda === tipo;
+            return matchPesquisa && matchTipo;
+        });
+
+        if (filtradas.length === 0) {
+            container.innerHTML = '<p style="color:#b983ff;text-align:center;">Nenhuma necessidade encontrada.</p>';
+            return;
+        }
+
+        filtradas.forEach(n => {
+            const card = document.createElement('div');
+            card.className = 'card-necessidade';
+            card.innerHTML = `
+                <h3>${n.titulo}</h3>
+                <div class="tipo">${n.tipoAjuda}</div>
+                <div class="desc">${n.descricao}</div>
+                <div><strong>Instituição:</strong> ${n.instituicao}</div>
+                <div><strong>Endereço:</strong> ${n.rua}, ${n.bairro}, ${n.cidade} - ${n.estado} (${n.cep})</div>
+                <div class="contato"><strong>Contato:</strong> ${n.contato}</div>
+            `;
+            container.appendChild(card);
+        });
+    }
+
+    document.getElementById('pesquisa').addEventListener('input', renderNecessidades);
+    document.getElementById('filtro-tipo').addEventListener('change', renderNecessidades);
+
+    window.addEventListener('DOMContentLoaded', renderNecessidades);
+    </script>
 </body>
 </html>
