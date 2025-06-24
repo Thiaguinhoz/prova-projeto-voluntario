@@ -88,6 +88,29 @@
         }
     });
 
+    // Salva no localStorage e redireciona
+    document.getElementById('form-necessidade').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const novaNecessidade = {
+            instituicao: this.instituicao.value,
+            tipoAjuda: this['tipo-ajuda'].value,
+            titulo: this.titulo.value,
+            descricao: this.descricao.value,
+            cep: this.cep.value,
+            rua: this.rua.value,
+            bairro: this.bairro.value,
+            cidade: this.cidade.value,
+            estado: this.estado.value,
+            contato: this.contato.value
+        };
+
+        const necessidades = JSON.parse(localStorage.getItem('necessidades')) || [];
+        necessidades.push(novaNecessidade);
+        localStorage.setItem('necessidades', JSON.stringify(necessidades));
+
+        window.location.href = "necessidades.html";
+    });
     </script>
 </body>
 </html>
