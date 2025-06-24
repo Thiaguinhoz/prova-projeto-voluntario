@@ -1,25 +1,24 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
+    <title>Necessidades Cadastradas | Impacto Emed</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ver Necessidades</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <header>
-        <h1>Necessidades Voluntaria</h1>
+        <h1>Necessidades Cadastradas</h1>
         <nav>
             <a href="index.html">Home</a>
             <a href="cadastrar.html">Cadastrar Necessidade</a>
-            <a href="necessidades.html">Necessidades</a>
+            <a href="necessidades.html">Ver Necessidades</a>
         </nav>
     </header>
     <main>
-        <h2>Necessidades Cadastradas</h2>
         <div class="filtros">
             <input type="text" id="pesquisa" placeholder="Pesquisar por título ou descrição...">
-            <select id="filtro-tipo">
+            <select id="filtroTipoAjuda">
                 <option value="">Todos os Tipos</option>
                 <option>Educação</option>
                 <option>Saúde</option>
@@ -29,50 +28,73 @@
                 <option>Outros</option>
             </select>
         </div>
-        <div id="lista-necessidades">
-            <!-- Cards dinâmicos aqui -->
-        </div>
+        <div id="listaNecessidades"></div>
     </main>
-
+    <footer>
+        &copy; 2025 Emed. Todos os direitos reservados.
+    </footer>
     <script>
-    // filepath: necessidades.html
-    function renderNecessidades() {
-        const lista = JSON.parse(localStorage.getItem('necessidades')) || [];
-        const pesquisa = document.getElementById('pesquisa').value.toLowerCase();
-        const tipo = document.getElementById('filtro-tipo').value;
-        const container = document.getElementById('lista-necessidades');
-        container.innerHTML = '';
+    const lista = document.getElementById("listaNecessidades");
+    const pesquisa = document.getElementById("pesquisa");
+    const filtro = document.getElementById("filtroTipoAjuda");
 
-        const filtradas = lista.filter(n => {
-            const matchPesquisa = n.titulo.toLowerCase().includes(pesquisa) || n.descricao.toLowerCase().includes(pesquisa);
-            const matchTipo = !tipo || n.tipoAjuda === tipo;
-            return matchPesquisa && matchTipo;
-        });
+    let necessidades = JSON.parse(localStorage.getItem("necessidades")) || [];
 
-        if (filtradas.length === 0) {
-            container.innerHTML = '<p style="color:#b983ff;text-align:center;">Nenhuma necessidade encontrada.</p>';
-            return;
-        }
+    function criarCard(n, idx) {
+        return `
+        <div class="card-necessidade">
+          <button class="btn-excluir" data-id="${idx}" title="Excluir necessidade">&times;</button>
+          <h3 class="card-titulo">${n.titulo}</h3>
+          <div class="tipo">${n.tipoAjuda}</div>
+          <div class="desc">${n.descricao}</div>
+          <div><strong>Instituição:</strong> ${n.instituicao}</div>
+          <div class="card-endereco">
+            <strong>Endereço:</strong>
+            <p>
+              ${n.rua ? n.rua + ', ' : ''}${n.bairro ? n.bairro + ', ' : ''}
+              ${n.cidade ? n.cidade + ' - ' : ''}${n.estado ? n.estado : ''}
+              ${n.cep ? '<br>CEP: ' + n.cep : ''}
+            </p>
+          </div>
+          <div class="contato"><strong>Contato:</strong> ${n.contato}</div>
+        </div>
+      `;
+    }
 
-        filtradas.forEach(n => {
-            const card = document.createElement('div');
-            card.className = 'card-necessidade';
-            card.innerHTML = `
-                <h3>${n.titulo}</h3>
-                <div class="tipo">${n.tipoAjuda}</div>
-                <div class="desc">${n.descricao}</div>
-                <div><strong>Instituição:</strong> ${n.instituicao}</div>
-                <div><strong>Endereço:</strong> ${n.rua}, ${n.bairro}, ${n.cidade} - ${n.estado} (${n.cep})</div>
-                <div class="contato"><strong>Contato:</strong> ${n.contato}</div>
-            `;
-            container.appendChild(card);
+    function renderizarLista(filtradas = necessidades) {
+        lista.innerHTML = filtradas.length > 0
+            ? filtradas.map((n, idx) => criarCard(n, idx)).join("")
+            : "<p style='color:#b983ff;text-align:center;'>Nenhuma necessidade encontrada.</p>";
+
+        // Adiciona eventos aos botões de excluir
+        document.querySelectorAll('.btn-excluir').forEach(btn => {
+            btn.addEventListener('click', function () {
+                const id = Number(this.getAttribute('data-id'));
+                if (confirm('Tem certeza que deseja excluir esta necessidade?')) {
+                    necessidades.splice(id, 1);
+                    localStorage.setItem("necessidades", JSON.stringify(necessidades));
+                    renderizarLista();
+                }
+            });
         });
     }
 
-    document.getElementById('pesquisa').addEventListener('input', renderNecessidades);
-    document.getElementById('filtro-tipo').addEventListener('change', renderNecessidades);
+    function filtrar() {
+        const texto = pesquisa.value.toLowerCase();
+        const tipo = filtro.value;
 
-    window.addEventListener('DOMContentLoaded', renderNecessidades);
+        const resultado = necessidades.filter(n =>
+            (n.titulo.toLowerCase().includes(texto) || n.descricao.toLowerCase().includes(texto)) &&
+            (tipo === "" || n.tipoAjuda === tipo)
+        );
+
+        renderizarLista(resultado);
+    }
+
+    pesquisa.addEventListener("input", filtrar);
+    filtro.addEventListener("change", filtrar);
+
+    renderizarLista();
     </script>
 </body>
 </html>
